@@ -2,38 +2,89 @@ import requests
 import re
 import os
 import json
-import urllib.request
 from datetime import datetime
 
-# --- واجهة المطور أحمد ---
 def banner():
     os.system('clear')
     print(f"""
-    \033[1;36m
+    \033[1;31m
      █████╗ ██╗  ██╗███╗   ███╗███████╗██████╗ 
     ██╔══██╗██║  ██║████╗ ████║██╔════╝██╔══██╗
     ███████║███████║██╔████╔██║█████╗  ██║  ██║
     ██╔══██║██╔══██║██║╚██╔╝██║██╔══╝  ██║  ██║
     ██║  ██║██║  ██║██║ ╚═╝ ██║███████╗██████╔╝
-    ╚═╝  ╚═╝╚═╝  ╚═╝╚═╝     ╚═╝╚══════╝╚═════╝ 
-    \033[1;32m
-    [+] Developer: AHMED (Ultimate OSINT Tool)
-    [+] Features: Emails, HD Avatar, Creation Date, Region
-    [+] Socials: Auto-Detection Enabled
-    \033[0m
+    ╚═╝  ╚═╝╚═╝  ╚═╝╚═╝     ╚═╝╚══════╝╚═════╝
+    \033[1;33m [!] TITAN EDITION v4.0 | Developed by: AHMED \033[0m
     """)
 
-def get_creation_date(uid):
-    try:
-        binary = bin(int(uid))
-        timestamp = int(binary[2:33], 2)
-        return datetime.fromtimestamp(timestamp).strftime('%Y-%m-%d')
-    except:
-        return "Unknown"
-
-def ahmed_ultimate_scan(username):
+def get_data(username):
     username = username.replace('@', '').lower()
     url = f"https://www.tiktok.com/@{username}"
+    
+    # قائمة رؤوس متغيرة لتجنب كشف البوت
+    headers = {
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/121.0.0.0 Safari/537.36',
+        'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8',
+        'Accept-Language': 'en-US,en;q=0.5',
+        'Connection': 'keep-alive',
+    }
+
+    print(f"[*] Ahmed's Engine is Deep Scanning: @{username}...")
+    
+    try:
+        session = requests.Session()
+        res = session.get(url, headers=headers, timeout=15)
+        
+        if res.status_code == 200:
+            html = res.text
+            
+            # 1. جلب الـ ID بذكاء (أنماط متعددة)
+            uid = "Not Found"
+            id_patterns = [r'\"userId\":\"(\d+)\"', r'\"id\":\"(\d+)\"', r'authorId\":\"(\d+)\"']
+            for pattern in id_patterns:
+                match = re.search(pattern, html)
+                if match:
+                    uid = match.group(1)
+                    break
+            
+            # 2. تاريخ الإنشاء (تحسين الحساب)
+            c_date = "N/A"
+            if uid != "Not Found":
+                try:
+                    ts = int(bin(int(uid))[2:33], 2)
+                    c_date = datetime.fromtimestamp(ts).strftime('%Y-%m-%d')
+                except: pass
+
+            # 3. المنطقة (Region)
+            reg = re.search(r'\"region\":\"([A-Z]{2})\"', html)
+            region = reg.group(1) if reg else "N/A"
+
+            # 4. السيرة الذاتية (Bio) - ميزة جديدة
+            bio_match = re.search(r'\"signature\":\"(.*?)\"', html)
+            bio = bio_match.group(1).encode().decode('unicode-escape') if bio_match else "No Bio"
+
+            # 5. صيد الإيميلات (تحسين الفلترة)
+            emails = list(set(re.findall(r'[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}', html)))
+
+            # --- عرض النتائج الاحترافية ---
+            print(f"\n\033[1;32m[✔] Deep Scan Results:\033[0m")
+            print(f"─" * 45)
+            print(f"\033[1;37m👤 User:       \033[1;34m@{username}\033[0m")
+            print(f"\033[1;37m🆔 ID:         \033[1;36m{uid}\033[0m")
+            print(f"\033[1;37m📅 Created:    \033[1;36m{c_date}\033[0m")
+            print(f"\033[1;37m🌍 Region:     \033[1;31m{region}\033[0m")
+            print(f"\033[1;37m📝 Bio:        \033[1;32m{bio}\033[0m")
+            print(f"\033[1;37m📧 Emails:     \033[1;33m{', '.join(emails) if emails else 'Private'}\033[0m")
+            print(f"─" * 45)
+            
+        else:
+            print(f"\033[1;31m[-] TikTok blocked the request (Status: {res.status_code})\033[0m")
+    except Exception as e:
+        print(f"[-] Error: {e}")
+
+if __name__ == "__main__":
+    banner()
+    get_data(input("Enter Target Username: "))
     
     headers = {
         'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/121.0.0.0 Safari/537.36',
