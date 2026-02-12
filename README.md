@@ -19,7 +19,7 @@
 افتح **Termux** أو أي نظام برمي وضع الأوامر التالية:
 
 ```bash
-git clone https://github.com/ahmadshh208/Tiktok-Hunter-Pro.git
+git clone https://github.com/hunterhunter25/Tiktok-Hunter-Pro.git
 cd Tiktok-Hunter-Pro
 pip install requests
 python ahmed_ultra_scan.py
@@ -29,6 +29,6 @@ python ahmed_ultra_scan.py
 
 ### 1. Clone the repository
 ```bash
-git clone https://github.com/ahmadshh208/Tiktok-Hunter-Pro.git
+git clone https://github.com/hunterhunter25/Tiktok-Hunter-Pro.git
 cd Tiktok-Hunter-Pro
 python ahmed_ultimate_osint.py
